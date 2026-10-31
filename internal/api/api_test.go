@@ -29,12 +29,16 @@ func TestHelloReturnsGreeting(t *testing.T) {
 	if ct := res.Header.Get("Content-Type"); ct != "application/json" {
 		t.Fatalf("Content-Type = %q", ct)
 	}
-	var body api.HelloResponse
+	// Decode into a map, not api.HelloResponse, so a renamed JSON key fails here.
+	var body map[string]string
 	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 		t.Fatal(err)
 	}
-	if body.Message != "Hello, World" {
-		t.Fatalf("message = %q", body.Message)
+	if got := body["greeting"]; got != "Hello, World" {
+		t.Fatalf("greeting = %q", got)
+	}
+	if got := body["message"]; got != "Hello, World" {
+		t.Fatalf("message = %q, want it kept until every client reads greeting", got)
 	}
 	if got := res.Header.Get("Access-Control-Allow-Origin"); got != "http://localhost:5173" {
 		t.Fatalf("Access-Control-Allow-Origin = %q", got)
