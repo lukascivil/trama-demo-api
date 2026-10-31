@@ -9,15 +9,23 @@ import (
 // DefaultWebOrigin is the browser origin of the demo frontend in development.
 const DefaultWebOrigin = "http://localhost:5173"
 
+// Greeting is the text GET /hello answers with.
+const Greeting = "Hello, World"
+
 // HelloResponse is the body of GET /hello.
 type HelloResponse struct {
+	Greeting string `json:"greeting"`
+	// Message repeats Greeting for clients that still read it.
+	//
+	// Deprecated: read Greeting. Message will be removed once every client
+	// reads greeting.
 	Message string `json:"message"`
 }
 
 // Hello answers GET /hello with the greeting.
 func Hello(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(HelloResponse{Message: "Hello, World"})
+	_ = json.NewEncoder(w).Encode(HelloResponse{Greeting: Greeting, Message: Greeting})
 }
 
 // WithCORS lets the browser at origin call next. Preflight requests are
